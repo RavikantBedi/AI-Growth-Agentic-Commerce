@@ -169,6 +169,33 @@ Open **http://localhost:5173**.
 The demo catalog (32 products with a real relationship graph) seeds itself on
 first boot. `Catalog → Load demo catalog` reloads it at any time.
 
+### Deploying the frontend to Vercel
+
+Vercel can host the Vite frontend. The FastAPI backend must be deployed
+separately because it uses a long-running process and SQLite. Deploy the
+backend to a Python host such as Render or Railway, then create a Vercel
+project from this repository with these settings:
+
+| Setting | Value |
+| --- | --- |
+| Root Directory | `frontend` |
+| Framework Preset | `Vite` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Install Command | `npm install` |
+
+Add this Vercel environment variable, using the public HTTPS URL of the
+backend (without a trailing slash):
+
+```env
+VITE_API_URL=https://your-backend.example.com
+```
+
+Also set the backend's `CORS_ORIGINS` environment variable to the Vercel URL,
+for example `https://your-project.vercel.app`. Redeploy the frontend after
+adding the variable. Keep `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` in the
+backend host's environment variables only; never add them to Vercel.
+
 ### Optional: real Razorpay test mode
 
 The app runs fully without it, using a clearly-labelled local sandbox. To use

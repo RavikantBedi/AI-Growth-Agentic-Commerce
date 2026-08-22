@@ -26,10 +26,12 @@ export class ApiError extends Error {
   }
 }
 
+const apiBaseUrl = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(path, {
+    response = await fetch(`${apiBaseUrl}${path}`, {
       ...init,
       headers: {
         "Content-Type": "application/json",
