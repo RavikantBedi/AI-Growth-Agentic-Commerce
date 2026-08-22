@@ -1,0 +1,219 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Design tokens
+
+   Every colour is a semantic role, not a hue: `--danger` means "this failed",
+   not "this is red". Components reference roles only, so the light and dark
+   themes stay in sync automatically and status colour can never drift.
+
+   Values are raw `R G B` triples so Tailwind's `<alpha-value>` works
+   (`bg-surface/60`, `border-line/50`, …).
+   ========================================================================== */
+@layer base {
+  :root {
+    /* Surfaces — light theme */
+    --bg: 248 249 251;
+    --surface: 255 255 255;
+    --surface-muted: 244 246 249;
+    --surface-raised: 255 255 255;
+
+    /* Lines */
+    --line: 226 231 238;
+    --line-strong: 209 216 226;
+
+    /* Text */
+    --fg: 15 17 21;
+    --fg-muted: 90 100 116;
+    --fg-faint: 138 147 162;
+    --fg-inverted: 255 255 255;
+
+    /* Primary action — near-black in light, inverted in dark */
+    --accent: 17 20 26;
+    --accent-hover: 38 43 53;
+    --accent-fg: 255 255 255;
+
+    /* Brand highlight, used sparingly for AI/agent affordances */
+    --brand: 79 70 229;
+    --brand-soft: 238 238 255;
+
+    /* Status */
+    --success: 21 128 61;
+    --success-soft: 236 250 241;
+    --warning: 180 83 9;
+    --warning-soft: 254 247 235;
+    --danger: 190 34 44;
+    --danger-soft: 254 242 242;
+    --info: 29 78 216;
+    --info-soft: 239 246 255;
+
+    /* Elevation */
+    --shadow-sm: 0 1px 2px 0 rgb(15 17 21 / 0.05);
+    --shadow-md: 0 2px 4px -1px rgb(15 17 21 / 0.06), 0 4px 12px -2px rgb(15 17 21 / 0.08);
+    --shadow-lg: 0 8px 24px -6px rgb(15 17 21 / 0.12), 0 2px 6px -2px rgb(15 17 21 / 0.06);
+
+    color-scheme: light;
+  }
+
+  .dark {
+    --bg: 9 10 13;
+    --surface: 19 21 26;
+    --surface-muted: 25 28 35;
+    --surface-raised: 26 29 36;
+
+    --line: 38 42 51;
+    --line-strong: 55 61 72;
+
+    --fg: 232 235 240;
+    --fg-muted: 154 163 178;
+    --fg-faint: 110 119 133;
+    --fg-inverted: 15 17 21;
+
+    --accent: 240 242 246;
+    --accent-hover: 255 255 255;
+    --accent-fg: 15 17 21;
+
+    --brand: 129 124 245;
+    --brand-soft: 33 32 66;
+
+    --success: 74 201 126;
+    --success-soft: 16 40 28;
+    --warning: 233 168 74;
+    --warning-soft: 45 33 15;
+    --danger: 248 113 113;
+    --danger-soft: 47 22 24;
+    --info: 96 149 255;
+    --info-soft: 18 30 55;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.4);
+    --shadow-md: 0 2px 4px -1px rgb(0 0 0 / 0.5), 0 4px 12px -2px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 8px 24px -6px rgb(0 0 0 / 0.6), 0 2px 6px -2px rgb(0 0 0 / 0.4);
+
+    color-scheme: dark;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    /* Defensive: the app scrolls inside its own panes, so a stray wide child
+       should never produce a horizontal page scrollbar. */
+    overflow-x: hidden;
+    @apply bg-bg text-fg antialiased;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Financial figures must align across rows. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  ::selection {
+    @apply bg-brand/20;
+  }
+
+  /* One visible, consistent focus ring everywhere. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand/60 ring-offset-2 ring-offset-bg;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line-strong)) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    @apply rounded-full bg-line-strong;
+  }
+
+  /* Honour the OS setting rather than insisting on our transitions. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Skeletons: one shimmer, defined once. */
+  .skeleton {
+    @apply relative overflow-hidden rounded bg-surface-muted;
+  }
+  .skeleton::after {
+    content: "";
+    @apply absolute inset-0 -translate-x-full;
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      rgb(var(--fg) / 0.06),
+      transparent
+    );
+    animation: shimmer 1.6s infinite;
+  }
+
+  @keyframes shimmer {
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-in-left {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
